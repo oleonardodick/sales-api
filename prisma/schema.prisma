@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  name      String
+  email     String
+  password  String
+  createdAt DateTime  @default(now()) @db.Timestamptz()
+  updatedAt DateTime  @updatedAt @db.Timestamptz()
+  deletedAt DateTime? @db.Timestamptz()
+
+  @@map("users")
+}
+
+model Measurement {
+  id        String    @id @default(uuid())
+  code      String    @unique
+  name      String
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("measurements")
+}
+
+model Product {
+  id            String      @id @default(uuid())
+  code          String      @unique
+  name          String
+  description   String
+  measurement   Measurement @relation(fields: [measurementId], references: [id])
+  measurementId String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+
+  @@map("products")
+}
