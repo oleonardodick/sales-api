@@ -7,7 +7,6 @@ import { PrismaService } from 'src/application/database/prisma.service';
 
 export function IsUnique(
   modelName: string,
-  fieldName: string,
   validationOptions?: ValidationOptions,
 ) {
   return function (object: Object, propertyName: string) {
@@ -16,12 +15,12 @@ export function IsUnique(
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
-      constraints: [modelName, fieldName],
+      constraints: [modelName],
       validator: {
         async validate(value: any, args: ValidationArguments) {
-          if (!value) return true;
+          if (!args.value) return true;
 
-          console.log('ARGS:', validationOptions);
+          const fieldName = args.property;
 
           const prismaService = new PrismaService();
           const data = await prismaService[modelName.toLowerCase()].findUnique({
