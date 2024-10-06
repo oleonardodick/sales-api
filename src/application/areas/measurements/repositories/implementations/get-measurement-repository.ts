@@ -8,19 +8,8 @@ import { GetMeasurementDto } from '../../dtos/get-measurement.dto';
 export class GetMeasurementRepository implements GetMeasurementInterface {
   constructor(private prisma: PrismaService) {}
 
-  private mapMeasurementToDto(measurement: Measurement): GetMeasurementDto {
-    return {
-      id: measurement.id,
-      code: measurement.code,
-      name: measurement.name,
-    };
-  }
-
   async getAll(): Promise<Measurement[]> {
     const measurements = await this.prisma.measurement.findMany();
-    // const measurementsDto = measurements.map((measurement) =>
-    //   this.mapMeasurementToDto(measurement),
-    // );
     return measurements;
   }
 
@@ -35,8 +24,6 @@ export class GetMeasurementRepository implements GetMeasurementInterface {
       throw new NotFoundException(`Measurement not found with the id ${id}`);
     }
     return measurement;
-
-    // return this.mapMeasurementToDto(measurement);
   }
 
   async getByCode(code: string): Promise<Measurement> {
@@ -52,7 +39,5 @@ export class GetMeasurementRepository implements GetMeasurementInterface {
       );
     }
     return measurement;
-
-    // return this.mapMeasurementToDto(measurement);
   }
 }

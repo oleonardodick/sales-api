@@ -1,17 +1,20 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 import { IsUnique } from 'src/common/validators/is-unique.validator';
 
 export class CreateMeasurementDto {
+  @ApiProperty()
   @IsNotEmpty({
-    message: 'Code should not be empty',
+    message: "'Code' is a required information.",
   })
   @IsUnique('measurement', {
-    message: 'Already have a measurement with this code',
+    message: 'Already have a measurement with this code.',
   })
   code: string;
 
+  @ApiProperty()
   @IsNotEmpty({
-    message: 'Name should not be empty',
+    message: "'Name' is a required information.",
   })
   name: string;
 }
