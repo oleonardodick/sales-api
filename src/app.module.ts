@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { UserModule } from './application/areas/user/user.module';
-import { ProductModule } from './application/areas/products/product.module';
-import { PrismaModule } from './application/database/prisma.module';
-import { MeasurementModule } from './application/areas/measurements/measurement.module';
+import { PrismaModule } from './database/prisma.module';
+import { MeasurementModule } from './app/measurements/measurement.module';
+import { UsersModule } from './app/users/users.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
-  imports: [PrismaModule, UserModule, ProductModule, MeasurementModule],
+  imports: [PrismaModule, MeasurementModule, UsersModule, AuthModule],
 })
 export class AppModule {}
