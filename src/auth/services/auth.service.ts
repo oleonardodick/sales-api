@@ -3,13 +3,21 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { GetUserService } from 'src/app/users/services/get-user/get-user.service';
 import { verifyData } from 'src/utils/security/verifyData.security';
+import { AuthRepository } from '../repositories/auth.repository';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements AuthRepository {
   constructor(
     private readonly getUserService: GetUserService,
     private readonly jwtService: JwtService,
   ) {}
+
+  async login(user: User): Promise<{ acess_token: string }> {
+    const payload = { sub: user.id, email: user.email, role: user.role };
+    return {
+      acess_token: await this.jwtService.signAsync(payload),
+    };
+  }
 
   async validateUser(email: string, password: string): Promise<User> {
     const user = await this.getUserService.getUserByEmail(email);
@@ -20,12 +28,5 @@ export class AuthService {
     } else {
       return user;
     }
-  }
-
-  async login(user: any) {
-    const payload = { sub: user.id, email: user.email };
-    return {
-      acess_token: await this.jwtService.signAsync(payload),
-    };
   }
 }

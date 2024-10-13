@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { CreateUserService } from '../../services/create-user/create-user.service';
 import {
   ApiBody,
@@ -8,7 +8,12 @@ import {
 } from '@nestjs/swagger';
 import { GetUserDto } from '../../dtos/get-user.dto';
 import { CreateUserDto } from '../../dtos/create-user.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/utils/guards/roles.guard';
+import { Roles } from 'src/utils/decorators/roles.decorator';
+import { Role } from '@prisma/client';
 
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiTags('Users')
 @Controller('users')
 export class CreateUserController {
@@ -23,6 +28,7 @@ export class CreateUserController {
     type: CreateUserDto,
     description: 'Data to be used when adding a new user.',
   })
+  @Roles(Role.ADMIN)
   @Post()
   async createUser(@Body() userData: CreateUserDto) {
     return { data: await this.createUserService.createUser(userData) };

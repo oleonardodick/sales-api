@@ -12,6 +12,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Users')
 @Controller('users')
+@UseGuards(AuthGuard('jwt'))
 export class GetUserController {
   constructor(private readonly getUserService: GetUserService) {}
 
@@ -21,7 +22,6 @@ export class GetUserController {
     isArray: true,
     type: GetUserDto,
   })
-  @UseGuards(AuthGuard('jwt'))
   @Get()
   async getAllUsers() {
     const users = await this.getUserService.getAllUsers();
