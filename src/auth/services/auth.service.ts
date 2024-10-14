@@ -12,10 +12,10 @@ export class AuthService implements AuthRepository {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(user: User): Promise<{ acess_token: string }> {
+  async login(user: User): Promise<{ access_token: string }> {
     const payload = { sub: user.id, email: user.email, role: user.role };
     return {
-      acess_token: await this.jwtService.signAsync(payload),
+      access_token: await this.jwtService.signAsync(payload),
     };
   }
 
