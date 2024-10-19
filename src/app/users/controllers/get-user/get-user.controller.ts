@@ -24,8 +24,7 @@ export class GetUserController {
   })
   @Get()
   async getAllUsers() {
-    const users = await this.getUserService.getAllUsers();
-    return users.map((user) => new GetUserDto(user));
+    return await this.getUserService.getAllUsers();
   }
 
   @ApiOperation({ summary: 'Return a user according to params' })
@@ -39,7 +38,7 @@ export class GetUserController {
   })
   @Get('query')
   async getUserByEmail(@Query('email') email: string) {
-    return new GetUserDto(await this.getUserService.getUserByEmail(email));
+    return await this.getUserService.getUserWithoutPasswordByEmail(email);
   }
 
   @ApiOperation({ summary: 'Return a user according to ID' })
@@ -53,6 +52,6 @@ export class GetUserController {
   })
   @Get(':id')
   async getUserById(@Param('id') id: string) {
-    return new GetUserDto(await this.getUserService.getUserById(id));
+    return await this.getUserService.getUserById(id);
   }
 }

@@ -5,9 +5,31 @@ import { GetUserService } from './services/get-user/get-user.service';
 import { GetUserController } from './controllers/get-user/get-user.controller';
 import { UpdateUserController } from './controllers/update-user/update-user.controller';
 import { CreateUserController } from './controllers/create-user/create-user.controller';
+import { CreateUserInterface } from './repositories/create-user.interface';
+import { CreateUserRepository } from './repositories/implementations/create-user.repository';
+import { GetUserInterface } from './repositories/get-user.interface';
+import { GetUserRepository } from './repositories/implementations/get-user.repository';
+import { UpdateUserInterface } from './repositories/update-user.interface';
+import { UpdateUserRepository } from './repositories/implementations/update-user.repository';
 
 @Module({
-  providers: [CreateUserService, UpdateUserService, GetUserService],
+  providers: [
+    CreateUserService,
+    {
+      provide: CreateUserInterface,
+      useClass: CreateUserRepository,
+    },
+    UpdateUserService,
+    {
+      provide: UpdateUserInterface,
+      useClass: UpdateUserRepository,
+    },
+    GetUserService,
+    {
+      provide: GetUserInterface,
+      useClass: GetUserRepository,
+    },
+  ],
   controllers: [GetUserController, UpdateUserController, CreateUserController],
   exports: [GetUserService],
 })

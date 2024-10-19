@@ -1,29 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { UpdateUserRepository } from '../../repositories/update-user.repository';
-import { PrismaService } from 'src/database/prisma.service';
-import { GetUserDto } from '../../dtos/get-user.dto';
 import { UpdateUserDto } from '../../dtos/update-user.dto';
-import { GetUserService } from '../get-user/get-user.service';
+import { UpdateUserInterface } from '../../repositories/update-user.interface';
+import { GetUserInterface } from '../../repositories/get-user.interface';
 
 @Injectable()
-export class UpdateUserService implements UpdateUserRepository {
+export class UpdateUserService {
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly getUserService: GetUserService,
+    private readonly UpdateUserInterface: UpdateUserInterface,
+    private readonly GetUserInterface: GetUserInterface,
   ) {}
 
-  async updateUser(id: string, userData: UpdateUserDto): Promise<GetUserDto> {
-    this.getUserService.getUserById(id);
-
-    const user = await this.prisma.user.update({
-      where: {
-        id: id,
-      },
-      data: {
-        ...userData,
-      },
-    });
-
-    return new GetUserDto(user);
+  async updateUser(id: string, userData: UpdateUserDto): Promise<void> {
+    await this.GetUserInterface.getUserById(id);
+    await this.UpdateUserInterface.updateUser(id, userData);
   }
 }

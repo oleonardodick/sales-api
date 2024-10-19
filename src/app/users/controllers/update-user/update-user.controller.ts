@@ -1,4 +1,11 @@
-import { Body, Controller, Param, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Param,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UpdateUserDto } from '../../dtos/update-user.dto';
 import { UpdateUserService } from '../../services/update-user/update-user.service';
@@ -15,6 +22,7 @@ export class UpdateUserController {
 
   @Roles(Role.ADMIN)
   @Put(':id')
+  @HttpCode(204)
   async updateUser(@Param('id') id: string, @Body() userData: UpdateUserDto) {
     return { data: await this.updateUserService.updateUser(id, userData) };
   }

@@ -8,12 +8,9 @@ import {
 } from '@nestjs/swagger';
 import { GetUserDto } from '../../dtos/get-user.dto';
 import { CreateUserDto } from '../../dtos/create-user.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { RolesGuard } from 'src/utils/guards/roles.guard';
 import { Roles } from 'src/utils/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 
-@UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiTags('Users')
 @Controller('users')
 export class CreateUserController {
