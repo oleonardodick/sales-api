@@ -4,7 +4,7 @@ import { GetUserService } from 'src/app/users/services/get-user/get-user.service
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { verifyData } from 'src/utils/security/verifyData.security';
-import { UnauthorizedException } from '@nestjs/common';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 jest.mock('../../utils/security/verifyData.security');
 
@@ -87,6 +87,16 @@ describe('AuthService', () => {
       await expect(
         authService.validateUser('teste@mail.com', 'wrongPassword'),
       ).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should return user not found', async () => {
+      (getUserService.getUserByEmail as jest.Mock).mockRejectedValue(
+        new NotFoundException('User not found.'),
+      );
+
+      await expect(
+        authService.validateUser('teste@mail.com', 'password'),
+      ).rejects.toThrow(new NotFoundException('User not found.'));
     });
   });
 });

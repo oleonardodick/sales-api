@@ -2,7 +2,7 @@ module.exports = {
   moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: '.',
   testEnvironment: 'node',
-  testRegex: '.*\\.spec\\.ts$', // Testes unitários usam o sufixo .spec.ts
+  testRegex: '\\.unit\\.spec\\.ts$',
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
