@@ -1,6 +1,7 @@
 import { validate } from 'class-validator';
-import { CreateUserDto } from '../../dtos/create-user.dto';
 import { Role } from '@prisma/client';
+import { CreateUserDto } from './create-user.dto';
+import { Messages } from 'src/utils/messages';
 
 describe('CreateUserDto', () => {
   it('should handle validation for empty name', async () => {
@@ -11,7 +12,23 @@ describe('CreateUserDto', () => {
 
     const errors = await validate(userData);
     expect(errors).toHaveLength(1);
-    expect(errors[0].constraints.isNotEmpty).toBe('The user name is required.');
+    expect(errors[0].constraints.isNotEmpty).toBe(
+      Messages.errors.fieldRequired('name'),
+    );
+  });
+
+  it('should handle non string value for name', async () => {
+    const userData = new CreateUserDto();
+    userData.name = 1 as unknown as string;
+    userData.email = 'test@mail.com';
+    userData.password = 'password1A';
+    userData.role = 'USER';
+
+    const errors = await validate(userData);
+    expect(errors).toHaveLength(1);
+    expect(errors[0].constraints.isString).toBe(
+      Messages.errors.notStringValue('name'),
+    );
   });
 
   it('should handle validation for empty e-mail', async () => {
@@ -23,7 +40,7 @@ describe('CreateUserDto', () => {
     const errors = await validate(userData);
     expect(errors).toHaveLength(1);
     expect(errors[0].constraints.isNotEmpty).toBe(
-      'The user e-mail is required.',
+      Messages.errors.fieldRequired('e-mail'),
     );
   });
 
@@ -36,9 +53,7 @@ describe('CreateUserDto', () => {
 
     const errors = await validate(userData);
     expect(errors).toHaveLength(1);
-    expect(errors[0].constraints.isEmail).toBe(
-      'E-mail must have an e-mail format.',
-    );
+    expect(errors[0].constraints.isEmail).toBe(Messages.errors.invalidEmail);
   });
 
   it('should handle validation for empty password', async () => {
@@ -50,7 +65,7 @@ describe('CreateUserDto', () => {
     const errors = await validate(userData);
     expect(errors).toHaveLength(1);
     expect(errors[0].constraints.isNotEmpty).toBe(
-      'The user password is required.',
+      Messages.errors.fieldRequired('password'),
     );
   });
 
@@ -64,7 +79,7 @@ describe('CreateUserDto', () => {
     const errors = await validate(userData);
     expect(errors).toHaveLength(1);
     expect(errors[0].constraints.matches).toBe(
-      'The password must have at least 8 characters with one lowercase letter, one uppercase letter and one number.',
+      Messages.errors.invalidPasswordMatch,
     );
   });
 
@@ -76,7 +91,9 @@ describe('CreateUserDto', () => {
 
     const errors = await validate(userData);
     expect(errors).toHaveLength(1);
-    expect(errors[0].constraints.isNotEmpty).toBe('The role is required.');
+    expect(errors[0].constraints.isNotEmpty).toBe(
+      Messages.errors.fieldRequired('role'),
+    );
   });
 
   it('should handle validation for invalid role', async () => {
@@ -88,8 +105,17 @@ describe('CreateUserDto', () => {
 
     const errors = await validate(userData);
     expect(errors).toHaveLength(1);
-    expect(errors[0].constraints.isEnum).toBe(
-      'Role must be either ADMIN or USER',
-    );
+    expect(errors[0].constraints.isEnum).toBe(Messages.errors.invalidRole);
+  });
+
+  it('should accept the the values', async () => {
+    const userData = new CreateUserDto();
+    userData.name = 'Test User';
+    userData.password = 'password1A';
+    userData.email = 'teste@mail.com';
+    userData.role = 'ADMIN';
+
+    const errors = await validate(userData);
+    expect(errors).toHaveLength(0);
   });
 });

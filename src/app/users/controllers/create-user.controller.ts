@@ -1,15 +1,16 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { CreateUserService } from '../../services/create-user/create-user.service';
 import {
   ApiBody,
   ApiCreatedResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { GetUserDto } from '../../dtos/get-user.dto';
-import { CreateUserDto } from '../../dtos/create-user.dto';
+
 import { Roles } from 'src/utils/decorators/roles.decorator';
 import { Role } from '@prisma/client';
+import { GetUserDto } from '../dtos/get-user.dto';
+import { CreateUserDto } from '../dtos/create-user.dto';
+import { CreateUserService } from '../services/create-user/create-user.service';
 
 @ApiTags('Users')
 @Controller('users')

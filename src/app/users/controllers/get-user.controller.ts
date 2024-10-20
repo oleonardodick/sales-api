@@ -5,10 +5,10 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { GetUserService } from '../../services/get-user/get-user.service';
-import { GetUserDto } from '../../dtos/get-user.dto';
 import { NotFoundExceptionDocumentation } from 'src/utils/documentation/not-found-exception.documentation';
 import { AuthGuard } from '@nestjs/passport';
+import { GetUserService } from '../services/get-user/get-user.service';
+import { GetUserDto } from '../dtos/get-user.dto';
 
 @ApiTags('Users')
 @Controller('users')

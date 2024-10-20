@@ -1,29 +1,36 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { Transform } from 'class-transformer';
-import { IsEmail, IsEnum, IsNotEmpty, Matches } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+  Matches,
+} from 'class-validator';
+import { Messages } from 'src/utils/messages';
 
 export class CreateUserDto {
   @ApiProperty()
-  @IsNotEmpty({ message: 'The user name is required.' })
+  @IsNotEmpty({ message: Messages.errors.fieldRequired('name') })
+  @IsString({ message: Messages.errors.notStringValue('name') })
   name: string;
 
   @ApiProperty()
-  @IsNotEmpty({ message: 'The user e-mail is required.' })
-  @IsEmail(undefined, { message: 'E-mail must have an e-mail format.' })
+  @IsNotEmpty({ message: Messages.errors.fieldRequired('e-mail') })
+  @IsEmail(undefined, { message: Messages.errors.invalidEmail })
   email: string;
 
   @ApiProperty()
-  @IsNotEmpty({ message: 'The user password is required.' })
+  @IsNotEmpty({ message: Messages.errors.fieldRequired('password') })
   @Matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[A-Za-z\d]{8,}$/, {
-    message:
-      'The password must have at least 8 characters with one lowercase letter, one uppercase letter and one number.',
+    message: Messages.errors.invalidPasswordMatch,
   })
   password: string;
 
   @ApiProperty({ example: 'ADMIN or USER' })
-  @Transform(({ value }) => value.toUpperCase())
-  @IsNotEmpty({ message: 'The role is required.' })
-  @IsEnum(Role, { message: 'Role must be either ADMIN or USER' })
+  @Transform(({ value }) => value.toString().toUpperCase())
+  @IsNotEmpty({ message: Messages.errors.fieldRequired('role') })
+  @IsEnum(Role, { message: Messages.errors.invalidRole })
   role: Role;
 }
