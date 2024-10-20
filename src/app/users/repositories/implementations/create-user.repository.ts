@@ -9,14 +9,10 @@ export class CreateUserRepository implements CreateUserInterface {
   constructor(private readonly prisma: PrismaService) {}
 
   async createUser(userData: CreateUserDto): Promise<User> {
-    try {
-      return await this.prisma.user.create({
-        data: {
-          ...userData,
-        },
-      });
-    } catch (error: any) {
-      console.log(error);
-    }
+    return await this.prisma.user.create({
+      data: {
+        ...userData,
+      },
+    });
   }
 }

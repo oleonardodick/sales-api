@@ -10,5 +10,6 @@ export const Messages = {
       'The password must have at least 8 characters with one lowercase letter, one uppercase letter and one number.',
     notStringValue: (field: string) =>
       `The field ${field} only accepts text value.`,
+    forbidenAccess: 'The user has no access to this functionality.',
   },
 };

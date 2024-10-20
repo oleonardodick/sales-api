@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   HttpCode,
@@ -24,6 +25,6 @@ export class UpdateUserController {
   @Put(':id')
   @HttpCode(204)
   async updateUser(@Param('id') id: string, @Body() userData: UpdateUserDto) {
-    return { data: await this.updateUserService.updateUser(id, userData) };
+    return await this.updateUserService.updateUser(id, userData);
   }
 }

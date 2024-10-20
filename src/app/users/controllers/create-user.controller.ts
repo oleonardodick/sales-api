@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import {
   ApiBody,
   ApiCreatedResponse,
@@ -29,6 +29,6 @@ export class CreateUserController {
   @Roles(Role.ADMIN)
   @Post()
   async createUser(@Body() userData: CreateUserDto) {
-    return { data: await this.createUserService.createUser(userData) };
+    return await this.createUserService.createUser(userData);
   }
 }

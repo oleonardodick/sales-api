@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Role } from '@prisma/client';
+import { Messages } from '../messages';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -26,9 +27,7 @@ export class RolesGuard implements CanActivate {
     const isValid = requiredRoles.some((role) => user.role === role);
 
     if (!isValid) {
-      throw new ForbiddenException(
-        'The user has no access to this functionality.',
-      );
+      throw new ForbiddenException(Messages.errors.forbidenAccess);
     }
 
     return isValid;

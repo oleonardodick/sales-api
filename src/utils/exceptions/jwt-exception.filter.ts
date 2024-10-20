@@ -5,6 +5,7 @@ import {
   HttpStatus,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Messages } from '../messages';
 
 @Catch(UnauthorizedException)
 export class JwtExceptionFilter implements ExceptionFilter {
@@ -18,8 +19,8 @@ export class JwtExceptionFilter implements ExceptionFilter {
       : HttpStatus.UNAUTHORIZED;
 
     const message = request.headers.authorization
-      ? 'Invalid JWT token'
-      : 'Token is required';
+      ? Messages.errors.invalidToken
+      : Messages.errors.fieldRequired('token JWT');
 
     response.status(status).json({
       statusCode: status,

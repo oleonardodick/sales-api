@@ -16,7 +16,7 @@ export class UpdateUserDto {
   email?: string;
 
   @ApiProperty({ example: 'ADMIN or USER' })
-  @Transform((role) => role.value.toUpperCase())
+  @Transform(({ value }) => value.toString().toUpperCase())
   @IsEnum(Role, { message: Messages.errors.invalidRole })
   @IsOptional()
   role?: Role;

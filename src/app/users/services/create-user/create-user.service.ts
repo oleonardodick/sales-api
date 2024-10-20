@@ -9,12 +9,8 @@ export class CreateUserService {
   constructor(private readonly CreateUserInterface: CreateUserInterface) {}
 
   async createUser(userData: CreateUserDto): Promise<GetUserDto> {
-    try {
-      userData.password = await hashData(userData.password);
-      const user = await this.CreateUserInterface.createUser(userData);
-      return new GetUserDto(user);
-    } catch (error: any) {
-      throw new InternalServerErrorException(error);
-    }
+    userData.password = await hashData(userData.password);
+    const user = await this.CreateUserInterface.createUser(userData);
+    return new GetUserDto(user);
   }
 }

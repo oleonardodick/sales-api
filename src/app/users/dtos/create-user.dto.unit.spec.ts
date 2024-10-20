@@ -2,6 +2,7 @@ import { validate } from 'class-validator';
 import { Role } from '@prisma/client';
 import { CreateUserDto } from './create-user.dto';
 import { Messages } from 'src/utils/messages';
+import { plainToClass } from 'class-transformer';
 
 describe('CreateUserDto', () => {
   it('should handle validation for empty name', async () => {
@@ -109,13 +110,29 @@ describe('CreateUserDto', () => {
   });
 
   it('should accept the the values', async () => {
-    const userData = new CreateUserDto();
-    userData.name = 'Test User';
-    userData.password = 'password1A';
-    userData.email = 'teste@mail.com';
-    userData.role = 'ADMIN';
+    const userData: CreateUserDto = {
+      name: 'Test User',
+      password: 'password1A',
+      email: 'teste@mail.com',
+      role: 'ADMIN',
+    };
 
     const errors = await validate(userData);
+    expect(errors).toHaveLength(0);
+  });
+
+  it('should accept the the values even when the role is in lowercase', async () => {
+    const userData: CreateUserDto = {
+      name: 'Test User',
+      password: 'password1A',
+      email: 'teste@mail.com',
+      role: 'admin' as Role,
+    };
+
+    const userDTO = plainToClass(CreateUserDto, userData);
+
+    const errors = await validate(userDTO);
+    expect(userDTO.role).toBe('ADMIN');
     expect(errors).toHaveLength(0);
   });
 });
