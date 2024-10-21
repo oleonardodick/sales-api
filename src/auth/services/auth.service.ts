@@ -4,6 +4,7 @@ import { User } from '@prisma/client';
 import { GetUserService } from 'src/app/users/services/get-user/get-user.service';
 import { verifyData } from 'src/utils/security/verifyData.security';
 import { AuthRepository } from '../repositories/auth.repository';
+import { Messages } from 'src/utils/messages';
 
 @Injectable()
 export class AuthService implements AuthRepository {
@@ -24,7 +25,7 @@ export class AuthService implements AuthRepository {
     const isAutenticated = await verifyData(password, user.password);
 
     if (!isAutenticated) {
-      throw new UnauthorizedException('E-mail or password invalid.');
+      throw new UnauthorizedException(Messages.errors.invalidCredentials);
     } else {
       return user;
     }

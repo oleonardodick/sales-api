@@ -15,6 +15,3 @@ module.exports = {
   globalSetup: '<rootDir>/test/testSetup.ts',
   globalTeardown: '<rootDir>/test/testTeardown.ts',
 };
-
-//   "globalSetup": "<rootDir>/test/testSetup.ts",
-//   "globalTeardown": "<rootDir>/test/testTeardown.ts"
