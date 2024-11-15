@@ -9,7 +9,7 @@ export class CreateUserService {
   constructor(private readonly CreateUserInterface: CreateUserInterface) {}
 
   async createUser(userData: CreateUserDto): Promise<GetUserDto> {
-    userData.password = await hashData(userData.password);
+    userData.senha = await hashData(userData.senha);
     const user = await this.CreateUserInterface.createUser(userData);
     return new GetUserDto(user);
   }

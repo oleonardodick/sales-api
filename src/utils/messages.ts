@@ -1,15 +1,16 @@
 export const Messages = {
   errors: {
-    userNotFound: 'User not found.',
-    invalidCredentials: 'E-mail or password invalid.',
-    invalidToken: 'Invalid JWT token.',
-    fieldRequired: (field: string) => `The ${field} is required.`,
-    invalidRole: 'The role must be either ADMIN or USER',
-    invalidEmail: 'The e-mail must have an e-mail format.',
+    userNotFound: 'Usuário não encontrado.',
+    invalidCredentials: 'E-mail ou senha inválido.',
+    invalidToken: 'Token JWT inválido.',
+    fieldRequired: (field: string) => `O campo ${field} é obrigatório.`,
+    invalidRole: 'O papel deve ser USUARIO ou ADMINISTRADOR.',
+    invalidEmail: 'Formato do e-mail inválido.',
     invalidPasswordMatch:
-      'The password must have at least 8 characters with one lowercase letter, one uppercase letter and one number.',
+      'A senha deve conter pelo menos 8 caracteres com uma letra minúscula, uma letra maiúscula e um número.',
     notStringValue: (field: string) =>
-      `The field ${field} only accepts text value.`,
-    forbidenAccess: 'The user has no access to this functionality.',
+      `O campo ${field} apenas aceita valores de texto.`,
+    notDateValues: (field: string) => `O campo ${field} apenas aceita data.`,
+    forbidenAccess: 'O usuário não possui acesso a esta funcionalidade.',
   },
 };

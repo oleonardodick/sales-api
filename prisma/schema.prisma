@@ -7,43 +7,59 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String
-  password  String
-  role      Role     @default(USER)
-  createdAt DateTime @default(now()) @db.Timestamptz()
-  updatedAt DateTime @updatedAt @db.Timestamptz()
+model Usuario {
+  id              String    @id @default(uuid())
+  nome            String
+  email           String
+  senha           String
+  papel           Papel     @default(USUARIO)
+  telefone        String?
+  avatarUrl       String?
+  dataNascimento  DateTime?
+  ativo           Boolean   @default(true)
+  endereco        Endereco  @relation(fields: [enderecoId], references: [id])
+  enderecoId      String    @unique // Chave estrangeira única
+  dataCriacao     DateTime  @default(now()) @db.Timestamptz()
+  dataAtualizacao DateTime  @updatedAt @db.Timestamptz()
 
-  @@map("users")
+  @@map("usuarios")
 }
 
-enum Role {
-  USER
-  ADMIN
+enum Papel {
+  USUARIO
+  ADMINISTRADOR
 }
 
-model Measurement {
-  id        String    @id @default(uuid())
-  code      String    @unique
-  name      String
-  products  Product[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+model Empresa {
+  id                String    @id @default(uuid())
+  fantasia          String
+  razaoSocial       String
+  cnpj              String
+  inscricaoEstadual String?
+  fundacao          DateTime?
+  email             String    @unique
+  telefone          String?
+  site              String?
+  endereco          Endereco  @relation(fields: [enderecoId], references: [id])
+  enderecoId        String    @unique
+  ativo             Boolean   @default(true)
+  dataCriacao       DateTime  @default(now()) @db.Timestamptz()
+  dataAtualizacao   DateTime  @updatedAt @db.Timestamptz()
 
-  @@map("measurements")
+  @@map("empresas")
 }
 
-model Product {
-  id            String      @id @default(uuid())
-  code          String      @unique
-  name          String
-  description   String
-  measurement   Measurement @relation(fields: [measurementId], references: [id])
-  measurementId String
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+model Endereco {
+  id              String   @id @default(uuid())
+  rua             String
+  cidade          String
+  uf              String
+  pais            String
+  cep             String
+  usuario         Usuario?
+  empresa         Empresa?
+  dataCriacao     DateTime @default(now()) @db.Timestamptz()
+  dataAtualizacao DateTime @updatedAt @db.Timestamptz()
 
-  @@map("products")
+  @@map("enderecos")
 }

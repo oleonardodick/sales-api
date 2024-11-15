@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { GetUserInterface } from '../../repositories/get-user.interface';
 import { GetUserDto } from '../../dtos/get-user.dto';
-import { User } from '@prisma/client';
+import { Usuario } from '@prisma/client';
 import { Messages } from 'src/utils/messages';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class GetUserService {
     return new GetUserDto(user);
   }
 
-  async getUserByEmail(email: string): Promise<User> {
+  async getUserByEmail(email: string): Promise<Usuario> {
     const user = await this.GetUserInterface.getUserByEmail(email);
     if (!user) {
       throw new NotFoundException(Messages.errors.userNotFound);

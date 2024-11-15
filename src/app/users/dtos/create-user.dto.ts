@@ -1,10 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '@prisma/client';
-import { Transform } from 'class-transformer';
 import {
+  IsDate,
   IsEmail,
-  IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Matches,
 } from 'class-validator';
@@ -12,9 +11,9 @@ import { Messages } from 'src/utils/messages';
 
 export class CreateUserDto {
   @ApiProperty()
-  @IsNotEmpty({ message: Messages.errors.fieldRequired('name') })
-  @IsString({ message: Messages.errors.notStringValue('name') })
-  name: string;
+  @IsNotEmpty({ message: Messages.errors.fieldRequired('nome') })
+  @IsString({ message: Messages.errors.notStringValue('nome') })
+  nome: string;
 
   @ApiProperty()
   @IsNotEmpty({ message: Messages.errors.fieldRequired('e-mail') })
@@ -22,15 +21,29 @@ export class CreateUserDto {
   email: string;
 
   @ApiProperty()
-  @IsNotEmpty({ message: Messages.errors.fieldRequired('password') })
+  @IsNotEmpty({ message: Messages.errors.fieldRequired('senha') })
   @Matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[A-Za-z\d]{8,}$/, {
     message: Messages.errors.invalidPasswordMatch,
   })
-  password: string;
+  senha: string;
 
-  @ApiProperty({ example: 'ADMIN or USER' })
-  @Transform(({ value }) => value.toString().toUpperCase())
-  @IsNotEmpty({ message: Messages.errors.fieldRequired('role') })
-  @IsEnum(Role, { message: Messages.errors.invalidRole })
-  role: Role;
+  @ApiProperty()
+  @IsOptional()
+  @IsString({ message: Messages.errors.notStringValue('telefone') })
+  telefone?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString({ message: Messages.errors.notStringValue('avatarUrl') })
+  avatarUrl?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsDate({ message: Messages.errors.notDateValues('dataNascimento') })
+  dataNascimento?: Date;
+
+  @IsNotEmpty({ message: Messages.errors.fieldRequired('endereço') })
+  @IsString({ message: Messages.errors.notStringValue('endereço') })
+  @IsNotEmpty({ message: Messages.errors.fieldRequired('endereço') })
+  endereco: string;
 }

@@ -8,7 +8,7 @@ export class UpdateUserRepository implements UpdateUserInterface {
   constructor(private readonly prisma: PrismaService) {}
 
   async updateUser(id: string, userData: UpdateUserDto): Promise<void> {
-    await this.prisma.user.update({
+    await this.prisma.usuario.update({
       where: { id: id },
       data: {
         ...userData,

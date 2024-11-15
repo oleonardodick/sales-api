@@ -1,5 +1,5 @@
-import { User } from '@prisma/client';
+import { Usuario } from '@prisma/client';
 
 export abstract class AuthRepository {
-  abstract login(user: User): Promise<{ access_token: string }>;
+  abstract login(usuario: Usuario): Promise<{ access_token: string }>;
 }

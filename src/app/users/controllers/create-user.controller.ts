@@ -7,7 +7,7 @@ import {
 } from '@nestjs/swagger';
 
 import { Roles } from 'src/utils/decorators/roles.decorator';
-import { Role } from '@prisma/client';
+import { Papel } from '@prisma/client';
 import { GetUserDto } from '../dtos/get-user.dto';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { CreateUserService } from '../services/create-user/create-user.service';
@@ -26,7 +26,7 @@ export class CreateUserController {
     type: CreateUserDto,
     description: 'Data to be used when adding a new user.',
   })
-  @Roles(Role.ADMIN)
+  // @Roles(Papel.ADMINISTRADOR)
   @Post()
   async createUser(@Body() userData: CreateUserDto) {
     return await this.createUserService.createUser(userData);

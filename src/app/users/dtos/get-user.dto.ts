@@ -1,17 +1,35 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '@prisma/client';
+import { Papel, Usuario } from '@prisma/client';
 
 export class GetUserDto {
   @ApiProperty()
   id: string;
   @ApiProperty()
-  name: string;
+  nome: string;
   @ApiProperty()
   email: string;
+  @ApiProperty()
+  papel: Papel;
+  @ApiProperty()
+  telefone: string;
+  @ApiProperty()
+  avatarUrl: string;
+  @ApiProperty()
+  dataNascimento: Date;
+  @ApiProperty()
+  ativo: Boolean;
+  @ApiProperty()
+  enderecoId: string;
 
-  constructor(user: User) {
-    this.id = user.id;
-    this.name = user.name;
-    this.email = user.email;
+  constructor(usuario: Usuario) {
+    this.id = usuario.id;
+    this.nome = usuario.nome;
+    this.email = usuario.email;
+    this.papel = usuario.papel;
+    this.telefone = usuario.telefone;
+    this.avatarUrl = usuario.avatarUrl;
+    this.dataNascimento = usuario.dataNascimento;
+    this.ativo = usuario.ativo;
+    this.enderecoId = usuario.enderecoId;
   }
 }

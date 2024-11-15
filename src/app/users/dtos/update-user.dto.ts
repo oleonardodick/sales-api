@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '@prisma/client';
+import { Papel } from '@prisma/client';
 import { Transform } from 'class-transformer';
 import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
 import { Messages } from 'src/utils/messages';
 
 export class UpdateUserDto {
   @ApiProperty()
-  @IsString({ message: Messages.errors.notStringValue('name') })
+  @IsString({ message: Messages.errors.notStringValue('nome') })
   @IsOptional()
   name?: string;
 
@@ -17,7 +17,7 @@ export class UpdateUserDto {
 
   @ApiProperty({ example: 'ADMIN or USER' })
   @Transform(({ value }) => value.toString().toUpperCase())
-  @IsEnum(Role, { message: Messages.errors.invalidRole })
+  @IsEnum(Papel, { message: Messages.errors.invalidRole })
   @IsOptional()
-  role?: Role;
+  papel?: Papel;
 }
