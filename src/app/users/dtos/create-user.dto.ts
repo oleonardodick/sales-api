@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsDate,
   IsEmail,
+  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -34,16 +36,32 @@ export class CreateUserDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsString({ message: Messages.errors.notStringValue('avatarUrl') })
-  avatarUrl?: string;
+  @IsString({ message: Messages.errors.notStringValue('foto') })
+  foto?: string;
 
   @ApiProperty()
   @IsOptional()
-  @IsDate({ message: Messages.errors.notDateValues('dataNascimento') })
-  dataNascimento?: Date;
+  @IsString({ message: Messages.errors.notStringValue('rua') })
+  rua?: string;
 
-  @IsNotEmpty({ message: Messages.errors.fieldRequired('endereço') })
-  @IsString({ message: Messages.errors.notStringValue('endereço') })
-  @IsNotEmpty({ message: Messages.errors.fieldRequired('endereço') })
-  endereco: string;
+  @ApiProperty()
+  @IsOptional()
+  @IsInt({ message: Messages.errors.notIntValue('número') })
+  numero?: number;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: Messages.errors.fieldRequired('cidade') })
+  @IsString({ message: Messages.errors.notStringValue('cidade') })
+  cidade: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString({ message: Messages.errors.notStringValue('cep') })
+  cep?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate({ message: Messages.errors.notDateValue('dataNascimento') })
+  dataNascimento?: Date;
 }

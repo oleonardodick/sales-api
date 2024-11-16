@@ -10,7 +10,9 @@ export const Messages = {
       'A senha deve conter pelo menos 8 caracteres com uma letra minúscula, uma letra maiúscula e um número.',
     notStringValue: (field: string) =>
       `O campo ${field} apenas aceita valores de texto.`,
-    notDateValues: (field: string) => `O campo ${field} apenas aceita data.`,
+    notDateValue: (field: string) => `O campo ${field} apenas aceita data.`,
+    notIntValue: (field: string) =>
+      `O campo ${field} apenas aceita números inteiros.`,
     forbidenAccess: 'O usuário não possui acesso a esta funcionalidade.',
   },
 };

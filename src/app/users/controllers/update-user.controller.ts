@@ -15,9 +15,9 @@ import { Papel } from '@prisma/client';
 import { UpdateUserService } from '../services/update-user/update-user.service';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 
-@ApiTags('Users')
+@ApiTags('Usuarios')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@Controller('users')
+@Controller('usuarios')
 export class UpdateUserController {
   constructor(private readonly updateUserService: UpdateUserService) {}
 

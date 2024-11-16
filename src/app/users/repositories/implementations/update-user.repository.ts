@@ -12,6 +12,11 @@ export class UpdateUserRepository implements UpdateUserInterface {
       where: { id: id },
       data: {
         ...userData,
+        cidade: {
+          connect: {
+            id: userData.cidade,
+          },
+        },
       },
     });
   }

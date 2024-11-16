@@ -24,9 +24,9 @@ export class AuthService implements AuthRepository {
     };
   }
 
-  async validateUser(email: string, password: string): Promise<Usuario> {
+  async validateUser(email: string, senha: string): Promise<Usuario> {
     const usuario = await this.getUserService.getUserByEmail(email);
-    const isAutenticated = await verifyData(password, usuario.senha);
+    const isAutenticated = await verifyData(senha, usuario.senha);
 
     if (!isAutenticated) {
       throw new UnauthorizedException(Messages.errors.invalidCredentials);

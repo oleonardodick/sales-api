@@ -11,13 +11,12 @@ import { UsersModule } from 'src/app/users/users.module';
     UsersModule,
     PassportModule,
     JwtModule.register({
-      global: true,
       secret: process.env.JWT_SECRETKEY,
       signOptions: { expiresIn: '60s' },
     }),
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy],
-  exports: [AuthService],
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

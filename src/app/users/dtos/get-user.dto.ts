@@ -13,13 +13,19 @@ export class GetUserDto {
   @ApiProperty()
   telefone: string;
   @ApiProperty()
-  avatarUrl: string;
+  foto: string;
+  @ApiProperty()
+  rua: string;
+  @ApiProperty()
+  numero: number;
+  @ApiProperty()
+  cidade: string;
+  @ApiProperty()
+  cep: string;
   @ApiProperty()
   dataNascimento: Date;
   @ApiProperty()
   ativo: Boolean;
-  @ApiProperty()
-  enderecoId: string;
 
   constructor(usuario: Usuario) {
     this.id = usuario.id;
@@ -27,9 +33,12 @@ export class GetUserDto {
     this.email = usuario.email;
     this.papel = usuario.papel;
     this.telefone = usuario.telefone;
-    this.avatarUrl = usuario.avatarUrl;
+    this.foto = usuario.foto;
+    this.rua = usuario.rua;
+    this.numero = usuario.numero;
+    this.cidade = usuario.cidadeId;
+    this.cep = usuario.cep;
     this.dataNascimento = usuario.dataNascimento;
     this.ativo = usuario.ativo;
-    this.enderecoId = usuario.enderecoId;
   }
 }

@@ -12,9 +12,9 @@ export class CreateUserRepository implements CreateUserInterface {
     return await this.prisma.usuario.create({
       data: {
         ...userData,
-        endereco: {
+        cidade: {
           connect: {
-            id: userData.endereco,
+            id: userData.cidade,
           },
         },
       },

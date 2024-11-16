@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -10,30 +11,33 @@ import { AuthGuard } from '@nestjs/passport';
 import { GetUserService } from '../services/get-user/get-user.service';
 import { GetUserDto } from '../dtos/get-user.dto';
 
-@ApiTags('Users')
-@Controller('users')
+@ApiTags('Usuarios')
+@Controller('usuarios')
 @UseGuards(AuthGuard('jwt'))
 export class GetUserController {
   constructor(private readonly getUserService: GetUserService) {}
 
-  @ApiOperation({ summary: 'Return all users from the database' })
+  @ApiOperation({ summary: 'Busca todos os usuários do banco de dados' })
   @ApiOkResponse({
-    description: 'The data was returned from the database',
+    description: 'Os dados foram retornados do banco de dados',
     isArray: true,
     type: GetUserDto,
   })
+  @ApiBearerAuth()
   @Get()
   async getAllUsers() {
     return await this.getUserService.getAllUsers();
   }
 
-  @ApiOperation({ summary: 'Return a user according to params' })
+  @ApiOperation({
+    summary: 'Busca um usuário de acordo com os parâmetros enviados.',
+  })
   @ApiOkResponse({
-    description: 'The data was returned sucessfully',
+    description: 'Os dados foram retornados com sucesso.',
     type: GetUserDto,
   })
   @ApiNotFoundResponse({
-    description: 'The user was not found.',
+    description: 'O usuário não foi encontrado.',
     type: NotFoundExceptionDocumentation,
   })
   @Get('query')
@@ -41,13 +45,13 @@ export class GetUserController {
     return await this.getUserService.getUserWithoutPasswordByEmail(email);
   }
 
-  @ApiOperation({ summary: 'Return a user according to ID' })
+  @ApiOperation({ summary: 'Busca um usuário de acordo com o ID passado.' })
   @ApiOkResponse({
-    description: 'The data was returned sucessfully.',
+    description: 'Dados retornados com sucesso.',
     type: GetUserDto,
   })
   @ApiNotFoundResponse({
-    description: 'The user was not found.',
+    description: 'O usuário não foi encontrado.',
     type: NotFoundExceptionDocumentation,
   })
   @Get(':id')

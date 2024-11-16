@@ -12,21 +12,21 @@ import { GetUserDto } from '../dtos/get-user.dto';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { CreateUserService } from '../services/create-user/create-user.service';
 
-@ApiTags('Users')
-@Controller('users')
+@ApiTags('Usuarios')
+@Controller('usuarios')
 export class CreateUserController {
   constructor(private readonly createUserService: CreateUserService) {}
 
-  @ApiOperation({ summary: 'Add a new user to the database' })
+  @ApiOperation({ summary: 'Adiciona um novo usuário ao banco de dados' })
   @ApiCreatedResponse({
     type: GetUserDto,
-    description: 'The user was created sucessfully',
+    description: 'O usuário foi criado com sucesso',
   })
   @ApiBody({
     type: CreateUserDto,
-    description: 'Data to be used when adding a new user.',
+    description: 'Dados que serão utilizados na criação do usuário.',
   })
-  // @Roles(Papel.ADMINISTRADOR)
+  @Roles(Papel.ADMINISTRADOR)
   @Post()
   async createUser(@Body() userData: CreateUserDto) {
     return await this.createUserService.createUser(userData);

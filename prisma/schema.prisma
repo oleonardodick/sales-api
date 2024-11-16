@@ -14,11 +14,14 @@ model Usuario {
   senha           String
   papel           Papel     @default(USUARIO)
   telefone        String?
-  avatarUrl       String?
+  foto            String?
+  rua             String?
+  numero          Int?
+  cidade          Cidade    @relation(fields: [cidadeId], references: [id])
+  cidadeId        String
+  cep             String?
   dataNascimento  DateTime?
   ativo           Boolean   @default(true)
-  endereco        Endereco  @relation(fields: [enderecoId], references: [id])
-  enderecoId      String    @unique // Chave estrangeira única
   dataCriacao     DateTime  @default(now()) @db.Timestamptz()
   dataAtualizacao DateTime  @updatedAt @db.Timestamptz()
 
@@ -30,36 +33,22 @@ enum Papel {
   ADMINISTRADOR
 }
 
-model Empresa {
-  id                String    @id @default(uuid())
-  fantasia          String
-  razaoSocial       String
-  cnpj              String
-  inscricaoEstadual String?
-  fundacao          DateTime?
-  email             String    @unique
-  telefone          String?
-  site              String?
-  endereco          Endereco  @relation(fields: [enderecoId], references: [id])
-  enderecoId        String    @unique
-  ativo             Boolean   @default(true)
-  dataCriacao       DateTime  @default(now()) @db.Timestamptz()
-  dataAtualizacao   DateTime  @updatedAt @db.Timestamptz()
+model Cidade {
+  id       String    @id @default(uuid())
+  nome     String
+  ibge     Int       @unique
+  estado   Estado    @relation(fields: [estadoId], references: [id])
+  estadoId String    @unique
+  usuario  Usuario[]
 
-  @@map("empresas")
+  @@map("cidades")
 }
 
-model Endereco {
-  id              String   @id @default(uuid())
-  rua             String
-  cidade          String
-  uf              String
-  pais            String
-  cep             String
-  usuario         Usuario?
-  empresa         Empresa?
-  dataCriacao     DateTime @default(now()) @db.Timestamptz()
-  dataAtualizacao DateTime @updatedAt @db.Timestamptz()
+model Estado {
+  id     String   @id @default(uuid())
+  nome   String
+  sigla  String   @unique
+  cidade Cidade[]
 
-  @@map("enderecos")
+  @@map("estados")
 }
