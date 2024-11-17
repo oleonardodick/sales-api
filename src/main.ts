@@ -22,6 +22,10 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
+  app.enableCors({
+    origin: true,
+    credentials: true,
+  });
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new JwtExceptionFilter());
   await app.listen(3000);
