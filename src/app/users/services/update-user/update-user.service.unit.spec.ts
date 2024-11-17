@@ -2,15 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UpdateUserService } from './update-user.service';
 import { UpdateUserInterface } from '../../repositories/update-user.interface';
 import { GetUserService } from '../get-user/get-user.service';
-import { User } from '@prisma/client';
 import { UpdateUserDto } from '../../dtos/update-user.dto';
 import { NotFoundException } from '@nestjs/common';
+import { Messages } from 'src/utils/messages';
 
 const id = 'testId';
 const userData: UpdateUserDto = {
-  name: 'updatedUser',
+  nome: 'updatedUser',
   email: 'updateduser@mail.com',
-  role: 'USER',
+  papel: 'USUARIO',
 };
 
 describe('UpdateUserService', () => {
@@ -42,13 +42,13 @@ describe('UpdateUserService', () => {
     getUserService = module.get<GetUserService>(GetUserService);
   });
 
-  it('should be defined', () => {
+  it('Deve estar definido', () => {
     expect(updateUserService).toBeDefined();
     expect(updateUserInterface).toBeDefined();
     expect(getUserService).toBeDefined();
   });
 
-  it('should update an user', async () => {
+  it('Deve atualizar um usuário', async () => {
     (getUserService.getUserById as jest.Mock).mockResolvedValue({});
     (updateUserInterface.updateUser as jest.Mock).mockResolvedValueOnce(
       undefined,
@@ -60,13 +60,13 @@ describe('UpdateUserService', () => {
     expect(updateUserInterface.updateUser).toHaveBeenCalledWith(id, userData);
   });
 
-  it('should return user not found', async () => {
+  it('Deve retornar usuário não encontrado', async () => {
     (getUserService.getUserById as jest.Mock).mockRejectedValue(
-      new NotFoundException('User not found.'),
+      new NotFoundException(Messages.errors.userNotFound),
     );
 
     await expect(updateUserService.updateUser(id, userData)).rejects.toThrow(
-      new NotFoundException('User not found.'),
+      new NotFoundException(Messages.errors.userNotFound),
     );
   });
 });

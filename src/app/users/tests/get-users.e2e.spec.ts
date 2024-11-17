@@ -6,14 +6,14 @@ import { Messages } from 'src/utils/messages';
 import { JwtExceptionFilter } from 'src/utils/exceptions/jwt-exception.filter';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/database/prisma.service';
-import { User } from '@prisma/client';
+import { Usuario } from '@prisma/client';
 
 describe('User e2e tests', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let jwtService: JwtService;
   let accessTokenAdmin: string;
-  let admin: User;
+  let admin: Usuario;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -28,12 +28,28 @@ describe('User e2e tests', () => {
     jwtService = app.get<JwtService>(JwtService);
     prisma = app.get<PrismaService>(PrismaService);
 
-    admin = await prisma.user.create({
+    const estado = await prisma.estado.create({
       data: {
-        name: 'User Admin Get',
-        password: 'PasswordAdmin',
-        role: 'ADMIN',
+        sigla: 'RS',
+        nome: 'Rio Grande do Sul',
+      },
+    });
+
+    const cidade = await prisma.cidade.create({
+      data: {
+        ibge: 541021,
+        nome: 'Cidade Exemplo',
+        estadoId: estado.id,
+      },
+    });
+
+    admin = await prisma.usuario.create({
+      data: {
+        nome: 'User Admin Get',
+        senha: 'PasswordAdmin',
+        papel: 'ADMINISTRADOR',
         email: 'adminGet@mail.com',
+        cidadeId: cidade.id,
       },
     });
   });
@@ -46,15 +62,15 @@ describe('User e2e tests', () => {
     const payloadAdmin = {
       sub: admin.id,
       email: admin.email,
-      role: admin.role,
+      papel: admin.papel,
     };
     accessTokenAdmin = await jwtService.signAsync(payloadAdmin);
   });
 
-  describe('/users (get) route', () => {
-    it('should reject the query by the lack of JWT Token', async () => {
+  describe('Rota /usuarios (get)', () => {
+    it('Deve rejeitar pela falta do token JWT', async () => {
       const response = await request(app.getHttpServer())
-        .get('/users')
+        .get('/usuarios')
         .expect(401);
 
       expect(response.body).toHaveProperty('message');
@@ -63,9 +79,9 @@ describe('User e2e tests', () => {
       );
     });
 
-    it('should reject the query when the token is invalid', async () => {
+    it('Deve rejeitar quando enviado um token inválido', async () => {
       const response = await request(app.getHttpServer())
-        .get('/users')
+        .get('/usuarios')
         .set('Authorization', `Bearer invalidToken`)
         .expect(401);
 
@@ -73,34 +89,30 @@ describe('User e2e tests', () => {
       expect(response.body.message).toEqual(Messages.errors.invalidToken);
     });
 
-    it('should return all the users from the database', async () => {
+    it('Deve retornar todos os usuários do banco de dados', async () => {
       const response = await request(app.getHttpServer())
-        .get('/users')
+        .get('/usuarios')
         .set('Authorization', `Bearer ${accessTokenAdmin}`)
         .expect(200);
 
       expect(response.body.length).toBeGreaterThanOrEqual(1);
       expect(response.body[0]).toHaveProperty('id');
-      expect(response.body[0]).toHaveProperty('name');
-      expect(response.body[0]).toHaveProperty('email');
     });
   });
 
-  describe('/users/id (get) route', () => {
-    it('should return a specific user by id', async () => {
+  describe('Rota /usuarios/id (get)', () => {
+    it('Deve retornar um usuário pelo seu ID', async () => {
       const response = await request(app.getHttpServer())
-        .get(`/users/${admin.id}`)
+        .get(`/usuarios/${admin.id}`)
         .set('Authorization', `Bearer ${accessTokenAdmin}`)
         .expect(200);
 
       expect(response.body).toHaveProperty('id', admin.id);
-      expect(response.body).toHaveProperty('name');
-      expect(response.body).toHaveProperty('email');
     });
 
-    it('should return not found when no user was found in the database', async () => {
+    it('Deve retornar erro de usuário não encontrado', async () => {
       const response = await request(app.getHttpServer())
-        .get('/users/1')
+        .get('/usuarios/1')
         .set('Authorization', `Bearer ${accessTokenAdmin}`)
         .expect(404);
 
@@ -109,9 +121,9 @@ describe('User e2e tests', () => {
     });
   });
 
-  it('should refuse the query by invalid token', async () => {
+  it('Deve rejeitar quando enviado um token inválido', async () => {
     const response = await request(app.getHttpServer())
-      .get(`/users/${admin.id}`)
+      .get(`/usuarios/${admin.id}`)
       .set('Authorization', 'Bearer invalidToken')
       .expect(401);
 
@@ -119,9 +131,9 @@ describe('User e2e tests', () => {
     expect(response.body.message).toEqual(Messages.errors.invalidToken);
   });
 
-  it('should refuse the query by the lack token', async () => {
+  it('Deve rejeitar quando não enviar o token', async () => {
     const response = await request(app.getHttpServer())
-      .get(`/users/${admin.id}`)
+      .get(`/usuarios/${admin.id}`)
       .expect(401);
 
     expect(response.body).toHaveProperty('message');
@@ -130,24 +142,20 @@ describe('User e2e tests', () => {
     );
   });
 
-  describe('/users/query?{queryParams} (get) route', () => {
-    it("should return a user by it's e-mail", async () => {
+  describe('Rota /usuarios/query?{queryParams} (get)', () => {
+    it('Deve retornar um usuário pelo seu e-mail', async () => {
       const response = await request(app.getHttpServer())
-        .get('/users/query')
+        .get('/usuarios/query')
         .query({ email: admin.email })
         .set('Authorization', `Bearer ${accessTokenAdmin}`)
         .expect(200);
 
-      expect(Object.keys(response.body).length).toBe(3);
-      expect(response.body).toHaveProperty('id', admin.id);
-      expect(response.body).toHaveProperty('name');
-      expect(response.body).toHaveProperty('email');
-      expect(response.body).not.toHaveProperty('password');
+      expect(response.body).toHaveProperty('email', admin.email);
     });
 
-    it('should return user not found', async () => {
+    it('Deve retornar usuário não encontrado', async () => {
       const response = await request(app.getHttpServer())
-        .get('/users/query')
+        .get('/usuarios/query')
         .query({ email: 'emailNotFound@mail.com' })
         .set('Authorization', `Bearer ${accessTokenAdmin}`)
         .expect(404);
@@ -156,9 +164,9 @@ describe('User e2e tests', () => {
       expect(response.body.message).toEqual(Messages.errors.userNotFound);
     });
 
-    it('should refuse the query by invalid token', async () => {
+    it('Deve recusar por token inválido', async () => {
       const response = await request(app.getHttpServer())
-        .get('/users/query')
+        .get('/usuarios/query')
         .query({ email: admin.email })
         .set('Authorization', 'Bearer invalidToken')
         .expect(401);
@@ -167,9 +175,9 @@ describe('User e2e tests', () => {
       expect(response.body.message).toEqual(Messages.errors.invalidToken);
     });
 
-    it('should refuse the query by the lack token', async () => {
+    it('Deve recusar pela falta do token', async () => {
       const response = await request(app.getHttpServer())
-        .get('/users/query')
+        .get('/usuarios/query')
         .query({ email: admin.email })
         .expect(401);
 

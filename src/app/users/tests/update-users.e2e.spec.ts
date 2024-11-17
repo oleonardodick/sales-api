@@ -6,16 +6,16 @@ import { Messages } from 'src/utils/messages';
 import { JwtExceptionFilter } from 'src/utils/exceptions/jwt-exception.filter';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/database/prisma.service';
-import { User } from '@prisma/client';
 import { UpdateUserDto } from '../dtos/update-user.dto';
+import { Usuario } from '@prisma/client';
 
 describe('User e2e tests', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let jwtService: JwtService;
-  let admin: User;
+  let admin: Usuario;
   let accessTokenAdmin: string;
-  let normalUser: User;
+  let normalUser: Usuario;
   let accessTokenNormalUser: string;
 
   beforeAll(async () => {
@@ -31,21 +31,38 @@ describe('User e2e tests', () => {
     jwtService = app.get<JwtService>(JwtService);
     prisma = app.get<PrismaService>(PrismaService);
 
-    admin = await prisma.user.create({
+    const estado = await prisma.estado.create({
       data: {
-        name: 'User Admin Update',
-        password: 'PasswordAdmin',
-        role: 'ADMIN',
-        email: 'adminUpdate@mail.com',
+        sigla: 'RS',
+        nome: 'Rio Grande do Sul',
       },
     });
 
-    normalUser = await prisma.user.create({
+    const cidade = await prisma.cidade.create({
       data: {
-        name: 'Normal User Update',
-        password: 'PasswordNormal',
-        role: 'USER',
+        ibge: 541021,
+        nome: 'Cidade Exemplo',
+        estadoId: estado.id,
+      },
+    });
+
+    admin = await prisma.usuario.create({
+      data: {
+        nome: 'User Admin Update',
+        senha: 'PasswordAdmin',
+        papel: 'ADMINISTRADOR',
+        email: 'adminUpdate@mail.com',
+        cidadeId: cidade.id,
+      },
+    });
+
+    normalUser = await prisma.usuario.create({
+      data: {
+        nome: 'Normal User Update',
+        senha: 'PasswordNormal',
+        papel: 'USUARIO',
         email: 'userUpdate@mail.com',
+        cidadeId: cidade.id,
       },
     });
   });
@@ -58,22 +75,26 @@ describe('User e2e tests', () => {
     const payloadAdmin = {
       sub: admin.id,
       email: admin.email,
-      role: admin.role,
+      papel: admin.papel,
     };
     accessTokenAdmin = await jwtService.signAsync(payloadAdmin);
 
     const payloadNormalUser = {
       sub: normalUser.id,
       email: normalUser.email,
-      role: normalUser.role,
+      papel: normalUser.papel,
     };
     accessTokenNormalUser = await jwtService.signAsync(payloadNormalUser);
+
+    normalUser = await prisma.usuario.findUnique({
+      where: { id: normalUser.id },
+    });
   });
 
-  describe('/users/id (put) route', () => {
-    it('should reject the update by the lack of JWT Token', async () => {
+  describe('Rota /usuarios/id (put)', () => {
+    it('Deve rejeitar pela falta do token JWT', async () => {
       const response = await request(app.getHttpServer())
-        .put(`/users/${normalUser.id}`)
+        .put(`/usuarios/${normalUser.id}`)
         .expect(401);
 
       expect(response.body).toHaveProperty('message');
@@ -82,9 +103,9 @@ describe('User e2e tests', () => {
       );
     });
 
-    it('should reject the update when the token is invalid', async () => {
+    it('Deve rejeitar pelo token inválido', async () => {
       const response = await request(app.getHttpServer())
-        .put(`/users/${normalUser.id}`)
+        .put(`/usuarios/${normalUser.id}`)
         .set('Authorization', `Bearer invalidToken`)
         .expect(401);
 
@@ -92,20 +113,20 @@ describe('User e2e tests', () => {
       expect(response.body.message).toEqual(Messages.errors.invalidToken);
     });
 
-    it('should return error when no ID was passed', async () => {
+    it('Deve retornar erro quando nenhum id foi passado', async () => {
       await request(app.getHttpServer())
-        .put('/users')
+        .put('/usuarios')
         .set('Authorization', `Bearer ${accessTokenAdmin}`)
         .expect(404);
     });
 
-    it('should reject when a user that is not an admin try to update a user', async () => {
+    it('Deve rejeitar quando um usuário não administrador tenta atualizar um registro', async () => {
       const dataToUpdate: UpdateUserDto = {
-        name: 'User updated',
+        nome: 'User updated',
       };
 
       const response = await request(app.getHttpServer())
-        .put(`/users/${normalUser.id}`)
+        .put(`/usuarios/${normalUser.id}`)
         .set('Authorization', `Bearer ${accessTokenNormalUser}`)
         .send(dataToUpdate)
         .expect(403);
@@ -114,25 +135,59 @@ describe('User e2e tests', () => {
       expect(response.body.message).toEqual(Messages.errors.forbidenAccess);
     });
 
-    it('should update the user data', async () => {
+    it('Deve atualizar os dados do usuário', async () => {
       const originalUser = normalUser;
       const dataToUpdate: UpdateUserDto = {
-        name: 'User updated',
-        role: 'ADMIN',
+        nome: 'User updated',
       };
       await request(app.getHttpServer())
-        .put(`/users/${normalUser.id}`)
+        .put(`/usuarios/${normalUser.id}`)
         .set('Authorization', `Bearer ${accessTokenAdmin}`)
         .send(dataToUpdate)
         .expect(204);
 
-      const updatedUser = await prisma.user.findUnique({
+      const updatedUser = await prisma.usuario.findUnique({
         where: { id: normalUser.id },
       });
 
       expect(originalUser).not.toEqual(updatedUser);
-      expect(originalUser.name).not.toEqual(updatedUser.name);
+      expect(originalUser.nome).not.toEqual(updatedUser.nome);
       expect(originalUser.email).toEqual(updatedUser.email);
+    });
+
+    it('Deve atualizar a cidade do usuário', async () => {
+      const estado = await prisma.estado.create({
+        data: {
+          sigla: 'TS',
+          nome: 'Estado Teste',
+        },
+      });
+
+      const cidade = await prisma.cidade.create({
+        data: {
+          ibge: 9054102,
+          nome: 'Cidade Exemplo 2',
+          estadoId: estado.id,
+        },
+      });
+
+      const originalUser = normalUser;
+      const dataToUpdate: UpdateUserDto = {
+        cidade: cidade.id,
+      };
+      await request(app.getHttpServer())
+        .put(`/usuarios/${normalUser.id}`)
+        .set('Authorization', `Bearer ${accessTokenAdmin}`)
+        .send(dataToUpdate)
+        .expect(204);
+
+      const updatedUser = await prisma.usuario.findUnique({
+        where: { id: normalUser.id },
+      });
+
+      expect(originalUser).not.toEqual(updatedUser);
+      expect(originalUser.cidadeId).not.toEqual(updatedUser.cidadeId);
+      expect(originalUser.nome).toEqual(updatedUser.nome);
     });
   });
 });

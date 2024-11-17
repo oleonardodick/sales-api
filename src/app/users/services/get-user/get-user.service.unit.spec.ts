@@ -1,31 +1,48 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GetUserService } from './get-user.service';
-import { User } from '@prisma/client';
 import { GetUserInterface } from '../../repositories/get-user.interface';
 import { GetUserDto } from '../../dtos/get-user.dto';
 import { NotFoundException } from '@nestjs/common';
+import { Usuario } from '@prisma/client';
+import { Messages } from 'src/utils/messages';
 
-const user1: User = {
+const usuario1: Usuario = {
   id: '1',
-  name: 'testUser1',
+  nome: 'testUser1',
   email: 'testuser1@mail.com',
-  password: 'password1',
-  role: 'USER',
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  senha: 'passwordA1',
+  telefone: '35410201',
+  rua: 'teste',
+  numero: 10,
+  cep: '93341250',
+  cidadeId: '1',
+  ativo: true,
+  foto: 'foto',
+  papel: 'USUARIO',
+  dataNascimento: new Date(),
+  dataCriacao: new Date(),
+  dataAtualizacao: new Date(),
 };
 
-const user2: User = {
+const usuario2: Usuario = {
   id: '2',
-  name: 'testUser2',
+  nome: 'testUser2',
   email: 'testuser2@mail.com',
-  password: 'password2',
-  role: 'ADMIN',
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  senha: 'passwordA1',
+  telefone: '35410201',
+  rua: 'teste',
+  numero: 10,
+  cep: '93341250',
+  cidadeId: '1',
+  ativo: true,
+  foto: 'foto',
+  papel: 'USUARIO',
+  dataNascimento: new Date(),
+  dataCriacao: new Date(),
+  dataAtualizacao: new Date(),
 };
 
-const users: User[] = [user1, user2];
+const usuarios: Usuario[] = [usuario1, usuario2];
 
 describe('GetUserService', () => {
   let getUserService: GetUserService;
@@ -50,26 +67,26 @@ describe('GetUserService', () => {
     getUserInterface = module.get<GetUserInterface>(GetUserInterface);
   });
 
-  it('should be defined', () => {
+  it('Deve estar definido', () => {
     expect(getUserService).toBeDefined();
     expect(getUserInterface).toBeDefined();
   });
 
   describe('GetAllUsers', () => {
-    it('should return a list of users', async () => {
-      (getUserInterface.getAllUsers as jest.Mock).mockResolvedValue(users);
+    it('Deve retornar uma lista de usuários', async () => {
+      (getUserInterface.getAllUsers as jest.Mock).mockResolvedValue(usuarios);
 
       const result = await getUserService.getAllUsers();
 
       expect(getUserInterface.getAllUsers).toHaveBeenCalled();
       expect(result).toHaveLength(2);
       expect(result).toEqual([
-        new GetUserDto(users[0]),
-        new GetUserDto(users[1]),
+        new GetUserDto(usuarios[0]),
+        new GetUserDto(usuarios[1]),
       ]);
     });
 
-    it('should return empty when it has no users in the DB', async () => {
+    it('Deve retornar em branco quando não tiver nenhum usuário no BD', async () => {
       (getUserInterface.getAllUsers as jest.Mock).mockResolvedValue([]);
 
       const result = await getUserService.getAllUsers();
@@ -78,54 +95,63 @@ describe('GetUserService', () => {
   });
 
   describe('GetUserById', () => {
-    it("should return an user by it's ID", async () => {
-      (getUserInterface.getUserById as jest.Mock).mockResolvedValue(user1);
+    it('Deve retornar um usuário pelo seu ID', async () => {
+      (getUserInterface.getUserById as jest.Mock).mockResolvedValue(usuario1);
 
-      const result = await getUserService.getUserById(user1.id);
+      const result = await getUserService.getUserById(usuario1.id);
 
-      expect(getUserInterface.getUserById).toHaveBeenCalledWith(user1.id);
-      expect(result).toEqual(new GetUserDto(user1));
+      expect(getUserInterface.getUserById).toHaveBeenCalledWith(usuario1.id);
+      expect(result).toEqual(new GetUserDto(usuario1));
     });
 
-    it('should return user not found', async () => {
+    it('Deve retornar usuário não encontrado', async () => {
       (getUserInterface.getUserById as jest.Mock).mockResolvedValue(null);
 
       await expect(getUserService.getUserById('5')).rejects.toThrow(
-        new NotFoundException('User not found.'),
+        new NotFoundException(Messages.errors.userNotFound),
       );
     });
   });
 
   describe('GetUserByEmail', () => {
-    it("should return an user by it's e-mail", async () => {
-      (getUserInterface.getUserByEmail as jest.Mock).mockResolvedValue(user1);
-      const result = await getUserService.getUserByEmail(user1.email);
-      expect(getUserInterface.getUserByEmail).toHaveBeenCalledWith(user1.email);
-      expect(result).toEqual(user1);
-    });
-
-    it("should return an user by it's e-mail without the password", async () => {
-      (getUserInterface.getUserByEmail as jest.Mock).mockResolvedValue(user1);
-      const result = await getUserService.getUserWithoutPasswordByEmail(
-        user1.email,
+    it('Deve retornar um usuário pelo seu e-mail, com a senha', async () => {
+      (getUserInterface.getUserByEmail as jest.Mock).mockResolvedValue(
+        usuario1,
       );
-      expect(getUserInterface.getUserByEmail).toHaveBeenCalledWith(user1.email);
-      expect(result).not.toHaveProperty('password');
-      expect(result).toEqual(new GetUserDto(user1));
+      const result = await getUserService.getUserByEmail(usuario1.email);
+      expect(getUserInterface.getUserByEmail).toHaveBeenCalledWith(
+        usuario1.email,
+      );
+      expect(result).toHaveProperty('senha');
+      expect(result).toEqual(usuario1);
     });
 
-    it('should return user not found in the method that returns the password', async () => {
+    it('Deve retornar um usuário pelo seu e-mail, sem a senha', async () => {
+      (getUserInterface.getUserByEmail as jest.Mock).mockResolvedValue(
+        usuario1,
+      );
+      const result = await getUserService.getUserWithoutPasswordByEmail(
+        usuario1.email,
+      );
+      expect(getUserInterface.getUserByEmail).toHaveBeenCalledWith(
+        usuario1.email,
+      );
+      expect(result).not.toHaveProperty('senha');
+      expect(result).toEqual(new GetUserDto(usuario1));
+    });
+
+    it('Deve retornar usuário não encontrado pelo método que retorna a senha.', async () => {
       (getUserInterface.getUserByEmail as jest.Mock).mockResolvedValue(null);
       await expect(
         getUserService.getUserByEmail('test@mail.com'),
-      ).rejects.toThrow(new NotFoundException('User not found.'));
+      ).rejects.toThrow(new NotFoundException(Messages.errors.userNotFound));
     });
 
-    it('should return user not found in the method that not returns the password', async () => {
+    it('Deve retornar usuário não encontrado pelo método que não retorna a senha', async () => {
       (getUserInterface.getUserByEmail as jest.Mock).mockResolvedValue(null);
       await expect(
         getUserService.getUserWithoutPasswordByEmail('test@mail.com'),
-      ).rejects.toThrow(new NotFoundException('User not found.'));
+      ).rejects.toThrow(new NotFoundException(Messages.errors.userNotFound));
     });
   });
 });

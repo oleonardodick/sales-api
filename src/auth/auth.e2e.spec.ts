@@ -5,13 +5,13 @@ import * as jwt from 'jsonwebtoken';
 import { AppModule } from 'src/app.module';
 import { Messages } from 'src/utils/messages';
 import { PrismaService } from 'src/database/prisma.service';
-import { User } from '@prisma/client';
 import { hashData } from 'src/utils/security/hashData.security';
+import { Usuario } from '@prisma/client';
 
 describe('User e2e tests', () => {
   let app: INestApplication;
   let prisma: PrismaService;
-  let userAuth: User;
+  let userAuth: Usuario;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,12 +23,28 @@ describe('User e2e tests', () => {
 
     prisma = app.get<PrismaService>(PrismaService);
 
-    userAuth = await prisma.user.create({
+    const estado = await prisma.estado.create({
       data: {
-        name: 'User Auth',
-        password: await hashData('passwordAuth'),
-        role: 'ADMIN',
+        sigla: 'RS',
+        nome: 'Rio Grande do Sul',
+      },
+    });
+
+    const cidade = await prisma.cidade.create({
+      data: {
+        ibge: 541021,
+        nome: 'Cidade Exemplo',
+        estadoId: estado.id,
+      },
+    });
+
+    userAuth = await prisma.usuario.create({
+      data: {
+        nome: 'User Auth',
+        senha: await hashData('passwordAuth'),
+        papel: 'ADMINISTRADOR',
         email: 'userAuth@mail.com',
+        cidadeId: cidade.id,
       },
     });
   });
@@ -38,10 +54,10 @@ describe('User e2e tests', () => {
   });
 
   describe('Authentication', () => {
-    it('should return invalid credentials', async () => {
+    it('Deve retornar erro de credenciais inválidas', async () => {
       const loginData = {
         email: 'userAuth@mail.com',
-        password: 'wrongPassword',
+        senha: 'wrongPassword',
       };
 
       const response = await request(app.getHttpServer())
@@ -53,10 +69,10 @@ describe('User e2e tests', () => {
       expect(response.body.message).toEqual(Messages.errors.invalidCredentials);
     });
 
-    it('should return user not found', async () => {
+    it('Deve retornar erro de usuário não encontrado', async () => {
       const loginData = {
         email: 'wrongEmail@mail.com',
-        password: 'passwordAuth',
+        senha: 'passwordAuth',
       };
 
       const response = await request(app.getHttpServer())
@@ -68,10 +84,10 @@ describe('User e2e tests', () => {
       expect(response.body.message).toEqual(Messages.errors.userNotFound);
     });
 
-    it('should login sucessfully and return the jwt token', async () => {
+    it('Deve logar com sucesso e retornar o token JWT', async () => {
       const loginData = {
         email: 'userAuth@mail.com',
-        password: 'passwordAuth',
+        senha: 'passwordAuth',
       };
 
       const response = await request(app.getHttpServer())
@@ -87,10 +103,10 @@ describe('User e2e tests', () => {
         typeof decoded === 'object' &&
         decoded !== null &&
         'email' in decoded &&
-        'role' in decoded
+        'papel' in decoded
       ) {
         expect(decoded.email).toEqual(userAuth.email);
-        expect(decoded.role).toEqual(userAuth.role);
+        expect(decoded.papel).toEqual(userAuth.papel);
       } else {
         throw new Error('Invalid payload');
       }

@@ -1,21 +1,29 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateUserService } from './create-user.service';
 import { CreateUserInterface } from '../../repositories/create-user.interface';
-import { User } from '@prisma/client';
 import { CreateUserDto } from '../../dtos/create-user.dto';
 import { hashData } from 'src/utils/security/hashData.security';
 import { GetUserDto } from '../../dtos/get-user.dto';
+import { Usuario } from '@prisma/client';
 
 jest.mock('../../../../utils/security/hashData.security');
 
-const user: User = {
+const usuario: Usuario = {
   id: '1',
-  name: 'testUser1',
+  nome: 'testUser1',
   email: 'testuser1@mail.com',
-  password: 'password1',
-  role: 'USER',
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  senha: 'passwordA1',
+  telefone: '35410201',
+  rua: 'teste',
+  numero: 10,
+  cep: '93341250',
+  cidadeId: '1',
+  ativo: true,
+  foto: 'foto',
+  papel: 'USUARIO',
+  dataNascimento: new Date(),
+  dataCriacao: new Date(),
+  dataAtualizacao: new Date(),
 };
 
 describe('CreateUserService', () => {
@@ -39,29 +47,29 @@ describe('CreateUserService', () => {
     createUserInterface = module.get<CreateUserInterface>(CreateUserInterface);
   });
 
-  it('should be defined', () => {
+  it('Deve estar definido', () => {
     expect(createUserService).toBeDefined();
     expect(createUserInterface).toBeDefined();
   });
 
-  it('should create an user', async () => {
+  it('Deve criar um usuário', async () => {
     const hashedPassword = 'hashedPassword';
-    const userToCreate: CreateUserDto = {
-      name: 'testUser1',
+    const usuarioParaCriacao: CreateUserDto = {
+      nome: 'testUser1',
       email: 'testuser1@mail.com',
-      password: 'password1',
-      role: 'ADMIN',
+      senha: 'password1',
+      cidade: '1',
     };
 
     (hashData as jest.Mock).mockResolvedValue(hashedPassword);
-    (createUserInterface.createUser as jest.Mock).mockResolvedValue(user);
+    (createUserInterface.createUser as jest.Mock).mockResolvedValue(usuario);
 
-    const result = await createUserService.createUser(userToCreate);
+    const result = await createUserService.createUser(usuarioParaCriacao);
 
-    /*during the execution of createUser, the object userToCreate was modified
-    by the function hashData, changing the password to the hashed password.*/
     expect(hashData).toHaveBeenCalledWith('password1');
-    expect(createUserInterface.createUser).toHaveBeenCalledWith(userToCreate);
-    expect(result).toEqual(new GetUserDto(user));
+    expect(createUserInterface.createUser).toHaveBeenCalledWith(
+      usuarioParaCriacao,
+    );
+    expect(result).toEqual(new GetUserDto(usuario));
   });
 });
