@@ -14,5 +14,6 @@ export const Messages = {
     notIntValue: (field: string) =>
       `O campo ${field} apenas aceita números inteiros.`,
     forbidenAccess: 'O usuário não possui acesso a esta funcionalidade.',
+    uniqueEmail: 'E-mail já cadastrado.',
   },
 };

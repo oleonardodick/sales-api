@@ -23,8 +23,9 @@ export class JwtExceptionFilter implements ExceptionFilter {
     if (request.url.startsWith('/auth/login')) {
       // Se for a rota de login, ignora o filtro e deixa o NestJS retornar o comportamento padrão
       return response.status(HttpStatus.UNAUTHORIZED).json({
-        statusCode: HttpStatus.UNAUTHORIZED,
         message: exception.message || 'Unauthorized', // Mensagem padrão do UnauthorizedException
+        error: 'Unauthorized',
+        statusCode: HttpStatus.UNAUTHORIZED,
       });
     }
 

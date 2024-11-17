@@ -32,4 +32,8 @@ export class GetUserService {
   async getUserWithoutPasswordByEmail(email: string): Promise<GetUserDto> {
     return new GetUserDto(await this.getUserByEmail(email));
   }
+
+  async getUserByEmailWithoutException(email: string): Promise<GetUserDto> {
+    return new GetUserDto(await this.GetUserInterface.getUserByEmail(email));
+  }
 }

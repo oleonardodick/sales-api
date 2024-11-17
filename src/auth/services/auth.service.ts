@@ -5,6 +5,7 @@ import { GetUserService } from 'src/app/users/services/get-user/get-user.service
 import { verifyData } from 'src/utils/security/verifyData.security';
 import { AuthRepository } from '../repositories/auth.repository';
 import { Messages } from 'src/utils/messages';
+import { LoginDto } from '../dtos/login.dto';
 
 @Injectable()
 export class AuthService implements AuthRepository {
@@ -24,9 +25,9 @@ export class AuthService implements AuthRepository {
     };
   }
 
-  async validateUser(email: string, senha: string): Promise<Usuario> {
-    const usuario = await this.getUserService.getUserByEmail(email);
-    const isAutenticated = await verifyData(senha, usuario.senha);
+  async validateUser(loginDto: LoginDto): Promise<Usuario> {
+    const usuario = await this.getUserService.getUserByEmail(loginDto.email);
+    const isAutenticated = await verifyData(loginDto.senha, usuario.senha);
 
     if (!isAutenticated) {
       throw new UnauthorizedException(Messages.errors.invalidCredentials);
