@@ -13,7 +13,7 @@ import { UsersModule } from 'src/app/users/users.module';
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRETKEY,
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: '24h' },
     }),
   ],
   controllers: [AuthController],
